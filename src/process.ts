@@ -5,6 +5,7 @@ import * as os from 'os'
 import normalize from 'normalize-path'
 import * as fs from 'fs-extra'
 import { parse } from 'comment-json'
+import getAliases from './getAlias'
 // const clipboardy = require('clipboardy')
 function complied(str: string, context: { [key: string]: string }) {
   return str.replace(/\${(.*?)}/g, (match, $1) => {
@@ -54,6 +55,9 @@ class ImgSnippet {
     if (!this.workspacePath) {
       return
     }
+
+    const aliasArr = getAliases()
+
     const pathFlag = os.platform() === 'win32' ? '\\' : '/'
 
     const tsconfigPath = `${this.workspacePath}${pathFlag}tsconfig.json`
@@ -73,13 +77,17 @@ class ImgSnippet {
         parse(fs.readFileSync(jsconfigPath).toString()).compilerOptions
           .baseUrl) ||
       ''
-
+    console.log('alias:',aliasArr)
+    console.log('tsconfigPath', tsconfigPath)
+    console.log('jsconfigPath', jsconfigPath)
+    console.log('aliasBaseUrl', this.aliasBaseUrl)
     this.aliasPaths = Object.fromEntries(
       Object.entries(paths).map(item => [
         item[0].replace('/*', ''),
         item[1][0].replace('/*', '')
       ])
     )
+    console.log('aliasPaths:',this.aliasPaths)
   }
 
   getAbsPath(currentFilePath: string, targetPath: string) {
@@ -121,6 +129,8 @@ class ImgSnippet {
       info = await this.getImageInfo(targetPath, false)
     } else {
       const path = this.getAbsPath(currentFilePath, targetPath)
+      console.log(currentFilePath,targetPath)
+      console.log('abspath:',path)
       info = await this.getImageInfo(path, true)
     }
 
