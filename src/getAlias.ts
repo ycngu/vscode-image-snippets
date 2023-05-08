@@ -38,8 +38,7 @@ function getAliasesFromTsConfig(tsConfigPath: string): Record<string, string> {
     for (const alias in paths) {
       const value = paths[alias][0];
       const resolvedAlias = alias.replace('/*', '');
-      const resolvedValue = path.resolve(path.dirname(tsConfigPath), value.replace('/*', ''));
-      aliases[resolvedAlias] = resolvedValue;
+      aliases[resolvedAlias] = value;
     }
 
     return aliases;
@@ -58,8 +57,7 @@ function getAliasesFromJsConfig(jsConfigPath: string): Record<string, string> {
     for (const alias in paths) {
       const value = paths[alias][0];
       const resolvedAlias = alias.replace('/*', '');
-      const resolvedValue = path.resolve(path.dirname(jsConfigPath), value.replace('/*', ''));
-      aliases[resolvedAlias] = resolvedValue;
+      aliases[resolvedAlias] = value;
     }
 
     return aliases;
@@ -85,7 +83,7 @@ function getAliases() {
   const workspaceFolders = vscode.workspace.workspaceFolders;
   if (!workspaceFolders) {
     console.error('No workspace folder found.');
-    return;
+    return {};
   }
 
   const workspacePath = workspaceFolders[0].uri.fsPath;

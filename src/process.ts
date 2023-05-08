@@ -63,12 +63,6 @@ class ImgSnippet {
     const tsconfigPath = `${this.workspacePath}${pathFlag}tsconfig.json`
     const jsconfigPath = `${this.workspacePath}${pathFlag}jsconfig.json`
 
-    const paths: { [key: string]: string } = {
-      ...(fs.pathExistsSync(tsconfigPath) &&
-        parse(fs.readFileSync(tsconfigPath).toString()).compilerOptions.paths),
-      ...(fs.pathExistsSync(jsconfigPath) &&
-        parse(fs.readFileSync(jsconfigPath).toString()).compilerOptions.paths)
-    }
     this.aliasBaseUrl =
       (fs.pathExistsSync(tsconfigPath) &&
         parse(fs.readFileSync(tsconfigPath).toString()).compilerOptions
@@ -77,17 +71,8 @@ class ImgSnippet {
         parse(fs.readFileSync(jsconfigPath).toString()).compilerOptions
           .baseUrl) ||
       ''
-    console.log('alias:',aliasArr)
-    console.log('tsconfigPath', tsconfigPath)
-    console.log('jsconfigPath', jsconfigPath)
-    console.log('aliasBaseUrl', this.aliasBaseUrl)
-    this.aliasPaths = Object.fromEntries(
-      Object.entries(paths).map(item => [
-        item[0].replace('/*', ''),
-        item[1][0].replace('/*', '')
-      ])
-    )
-    console.log('aliasPaths:',this.aliasPaths)
+
+    this.aliasPaths = getAliases()
   }
 
   getAbsPath(currentFilePath: string, targetPath: string) {
@@ -96,7 +81,14 @@ class ImgSnippet {
     }
     const paths = this.aliasPaths
     const keys = Object.keys(paths)
-    const aliasKey = keys.find(item => targetPath.startsWith(item))
+    const pathSplit = targetPath.split('/')
+    const aliasKey = keys.find(item =>
+      pathSplit.find(item2 => {
+        return item == item2
+      })
+    )
+
+    console.log('aliasKey: ', aliasKey)
     if (aliasKey) {
       // 替换别名
       targetPath = targetPath.replace(aliasKey, paths[aliasKey])
@@ -121,6 +113,7 @@ class ImgSnippet {
     if (!match) {
       return null
     }
+    console.log('in cover')
     const targetPath = match[0]
     const currentFilePath = this.currentFileURI?.fsPath || ''
     // 判断是否为本地Path
@@ -129,8 +122,8 @@ class ImgSnippet {
       info = await this.getImageInfo(targetPath, false)
     } else {
       const path = this.getAbsPath(currentFilePath, targetPath)
-      console.log(currentFilePath,targetPath)
-      console.log('abspath:',path)
+      console.log(currentFilePath, targetPath)
+      console.log('abspath:', path)
       info = await this.getImageInfo(path, true)
     }
 
