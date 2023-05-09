@@ -5,7 +5,7 @@ import * as os from 'os'
 import normalize from 'normalize-path'
 import * as fs from 'fs-extra'
 import { parse } from 'comment-json'
-import getAliases from './getAlias'
+import {getAliases,getBaseUrl} from './getAlias'
 // const clipboardy = require('clipboardy')
 function complied(str: string, context: { [key: string]: string }) {
   return str.replace(/\${(.*?)}/g, (match, $1) => {
@@ -56,23 +56,10 @@ class ImgSnippet {
       return
     }
 
-    const aliasArr = getAliases()
-
-    const pathFlag = os.platform() === 'win32' ? '\\' : '/'
-
-    const tsconfigPath = `${this.workspacePath}${pathFlag}tsconfig.json`
-    const jsconfigPath = `${this.workspacePath}${pathFlag}jsconfig.json`
-
-    this.aliasBaseUrl =
-      (fs.pathExistsSync(tsconfigPath) &&
-        parse(fs.readFileSync(tsconfigPath).toString()).compilerOptions
-          .baseUrl) ||
-      (fs.pathExistsSync(jsconfigPath) &&
-        parse(fs.readFileSync(jsconfigPath).toString()).compilerOptions
-          .baseUrl) ||
-      ''
-
+    this.aliasBaseUrl = getBaseUrl()
     this.aliasPaths = getAliases()
+    console.log('aliaspaths:',this.aliasPaths)
+    console.log('aliasbaseurl:',this.aliasBaseUrl)
   }
 
   getAbsPath(currentFilePath: string, targetPath: string) {
@@ -88,7 +75,6 @@ class ImgSnippet {
       })
     )
 
-    console.log('aliasKey: ', aliasKey)
     if (aliasKey) {
       // 替换别名
       targetPath = targetPath.replace(aliasKey, paths[aliasKey])
@@ -113,7 +99,6 @@ class ImgSnippet {
     if (!match) {
       return null
     }
-    console.log('in cover')
     const targetPath = match[0]
     const currentFilePath = this.currentFileURI?.fsPath || ''
     // 判断是否为本地Path
@@ -122,8 +107,6 @@ class ImgSnippet {
       info = await this.getImageInfo(targetPath, false)
     } else {
       const path = this.getAbsPath(currentFilePath, targetPath)
-      console.log(currentFilePath, targetPath)
-      console.log('abspath:', path)
       info = await this.getImageInfo(path, true)
     }
 
