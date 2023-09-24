@@ -13,13 +13,19 @@ function complied(str: string, context: { [key: string]: string }) {
     return context[$1.trim()]
   })
 }
+
 class ImgSnippet {
   constructor(
     private config: {
-      tpl: string
+      tpl: string,
+      remtpl: string,
+      RemMode:boolean
     } = {
-      tpl: 'width: ${width}px;\nheight: ${height}px;'
+      tpl: 'width: ${width}px;\nheight: ${height}px;',
+      remtpl: 'width: ${width}rem;\nheight: ${height}rem;',
+      RemMode:false,
     }
+    
   ) {
     this.initAliasPaths()
 
@@ -109,15 +115,23 @@ class ImgSnippet {
       const path = this.getAbsPath(currentFilePath, targetPath)
       info = await this.getImageInfo(path, true)
     }
-
+    let result = ''
+    if(this.config.RemMode){
+      info.width = (info.width as number)/100
+      info.height = (info.height as number)/100
+      result = complied(this.config.remtpl, info as any)
+    } else {
+      result = complied(this.config.tpl, info as any)
+    }
     // const complied = template(this.config.tpl)
-    const result = complied(this.config.tpl, info as any)
 
     return {
       label: result,
       insertText: result
     }
   }
+
+
 
   private async getImageInfo(path: string, isLocal: boolean) {
     const param = isLocal

@@ -1,3 +1,4 @@
+This  repository was forked by 
 # Image Snippets
 
 <p align="center"><a href="https://marketplace.visualstudio.com/items?itemName=ron0115.image-snippets" target="_blank" rel="noopener noreferrer"><img width="100" src="./images/icon.png"></a></p>
@@ -56,5 +57,6 @@
 
 - [x] Support `alias` detected in `tsconfig.json` or `jsconfig.json`
 - [x] Support http(s) url detect
+- [x] Support `rem` or `px` unit
 - [ ] Support Array for `Extention.tpl`, set multi spinnets avaliable!
 - [ ] Get more variables about image information injects to template if need

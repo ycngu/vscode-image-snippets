@@ -2,16 +2,16 @@
   "name": "image-snippets",
   "displayName": "Image Snippets",
   "description": "generate image snippets insert to your editor",
-  "version": "0.0.3",
-  "publisher": "ron0115",
+  "version": "0.0.4",
+  "publisher": "ycngu",
   "engines": {
     "vscode": "^1.41.0"
   },
   "icon": "images/icon.png",
-  "homepage": "https://github.com/ron0115/vscode-image-snippets",
+  "homepage": "https://github.com/ycngu/vscode-image-snippets",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ron0115/vscode-image-snippets"
+    "url": "https://github.com/ycngu/vscode-image-snippets"
   },
   "categories": [
     "Snippets",
@@ -45,6 +45,18 @@
           "default": "width: ${width}px;\nheight: ${height}px;",
           "description": "Customize snippets template",
           "markdownDescription": "Custom snippets template, (e.g. `width: ${width}px;`), support ${width} ${height}"
+        },
+        "ImgSnippet.remtpl": {
+          "type": "string",
+          "default": "width: ${width}rem;\nheight: ${height}rem;",
+          "description": "Customize snippets template",
+          "markdownDescription": "Custom snippets template, (e.g. `width: ${width}rem;`), support ${width} ${height}"
+        },
+        "ImgSnippet.RemMode": {
+          "type": "boolean",
+          "default": false,
+          "description": "use rem layout(1rem = 100px,the page width is assumed to be 750px.), (e.g. `width: ${width}rem;`)",
+          "markdownDescription": "use rem layout(1rem = 100px,the page width is assumed to be 750px.), (e.g. `width: ${width}rem;`)"
         }
       }
     }
